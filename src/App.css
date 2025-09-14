@@ -1,0 +1,41 @@
+
+/* Colors */
+:root {
+  --primary-bg: #09090B;
+  --secondary-bg: #141319;
+  --tertiary-bg: #17171C;
+}
+
+/* Base */
+html, body {
+  overflow-x: hidden;
+  background-color: var(--primary-bg);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+
+/* Gradient text */
+.sp-text {
+  background: conic-gradient(at top, #c084fc, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Icons */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  font-size: 20px;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  background-color: var(--secondary-bg);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.icon:hover {
+  background-color: var(--tertiary-bg);
+}

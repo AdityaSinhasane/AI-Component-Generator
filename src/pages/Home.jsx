@@ -10,6 +10,7 @@ import { ImNewTab } from "react-icons/im";
 import { LuRefreshCcw } from "react-icons/lu";
 import { GoogleGenAI } from "@google/genai";
 import { ClipLoader } from "react-spinners"
+import { toast } from "react-toastify";
 
 
 
@@ -69,8 +70,10 @@ const Home = () => {
   const copyCode = async() =>{
     try {
       await navigator.clipboard.writeText(code);
+      toast.success("Code copied to clipboard");
     } catch (err) {
       console.error('Failed to copy: ', err);
+      toast.error("Failed to copy");
     }
   }
 
@@ -128,7 +131,16 @@ const Home = () => {
           }} value={prompt} className="w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-[10px]" placeholder="Describe your component and let AI will code for your component"></textarea>
           <div className="flex items-center justify-between">
             <p className="text-[gray]">Click on generate button to generate your code</p>
-            <button onClick={getResponse} className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]"> <i><BsStars /></i> Generate </button>
+            <button onClick={getResponse} className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]"> <i><BsStars /></i> 
+                {
+                  loading === true ? <>
+                    <>
+                      <ClipLoader className="text-[30px]"/>
+                    </>
+                  </> : ""
+                }
+              Generate 
+            </button>
           </div>
           
         </div>
@@ -136,13 +148,7 @@ const Home = () => {
         <div className="right relative mt-2 w-[50%] h-[80vh] bg-[#141319] rounded-xl">
           {
             outputScreen === false ? <>
-              {
-                loading === true ? <>
-                  <div className="loader absolute left-0 top-0 w-full h-full flex items-center justify-center bg-[rgb(0,0,0,0.5)]">
-                    <ClipLoader/>
-                  </div>
-                </> : ""
-              }
+              
              
               <div className="skeleton w-full h-full flex items-center flex-col justify-center">
                 <div className="circle p-[20px] w-[70px] h-[70px] flex items-center justify-center text-[25px] rounded-[50%] bg-gradient-to-r from-purple-400  to-purple-600">
@@ -164,7 +170,7 @@ const Home = () => {
                 </div>
                 <div className="right flex items-center gap-[10px]">
                   { tab === 1 ? <>
-                    <button className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><IoCopySharp /></button>
+                    <button onClick={copyCode} className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><IoCopySharp /></button>
                     <button className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><CgExport /></button>
                   </> : <>
                     <button className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><ImNewTab /></button>

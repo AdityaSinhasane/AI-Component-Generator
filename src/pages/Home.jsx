@@ -9,6 +9,7 @@ import { CgExport, CgLayoutGrid } from "react-icons/cg";
 import { ImNewTab } from "react-icons/im";
 import { LuRefreshCcw } from "react-icons/lu";
 import { GoogleGenAI } from "@google/genai";
+import { ClipLoader } from "react-spinners"
 
 
 
@@ -21,12 +22,19 @@ const Home = () => {
     { value: "html-tailwind-bootstrap", label: "HTML + Tailwind + Bootstrap" },
   ];
 
-  const [outputScreen, setOutputScreen] = useState(true);
+  const [outputScreen, setOutputScreen] = useState(false);
   const [tab, setTab] = useState(1);
   const [prompt, setPrompt] = useState("");
   const [frameWork, setFrameWork] = useState(options[0]);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+
+  function extractCode(response){
+    // use Regex to get content between triple backticks
+    const match = response.match(/```(?:\w+)?\n?([\s\S]*?)```/);
+    return match ? match[1].trim() : response.trim();
+  }
 
 
   // The client gets the API key from the environment variable `GEMINI_API_KEY`.
@@ -53,9 +61,17 @@ const Home = () => {
       `,
     });
     console.log(response.text);
-    setCode(response.text);
+    setCode(extractCode(response.text));
     setOutputScreen(true);
     setLoading(false);
+  }
+
+  const copyCode = async() =>{
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
   }
 
   return (
@@ -117,9 +133,17 @@ const Home = () => {
           
         </div>
 
-        <div className="right mt-2 w-[50%] h-[80vh] bg-[#141319] rounded-xl">
+        <div className="right relative mt-2 w-[50%] h-[80vh] bg-[#141319] rounded-xl">
           {
             outputScreen === false ? <>
+              {
+                loading === true ? <>
+                  <div className="loader absolute left-0 top-0 w-full h-full flex items-center justify-center bg-[rgb(0,0,0,0.5)]">
+                    <ClipLoader/>
+                  </div>
+                </> : ""
+              }
+             
               <div className="skeleton w-full h-full flex items-center flex-col justify-center">
                 <div className="circle p-[20px] w-[70px] h-[70px] flex items-center justify-center text-[25px] rounded-[50%] bg-gradient-to-r from-purple-400  to-purple-600">
                   <HiOutlineCode/>
@@ -153,7 +177,7 @@ const Home = () => {
               <div className="editor h-full">
               {
                 tab === 1 ? <>
-                  <Editor height="100%" theme="vs-dark" language="html" value="" />
+                  <Editor value={code} height="100%" theme="vs-dark" language="html"/>
                 </>: <>
                   <div className="preview w-full h-full bg-white text-black flex items-center justify-center">
 

@@ -5,9 +5,13 @@ import { BsStars } from "react-icons/bs"
 import { HiOutlineCode } from "react-icons/hi";
 import Editor from '@monaco-editor/react';
 import { IoCopySharp } from "react-icons/io5";
-import { CgExport } from "react-icons/cg";
+import { CgExport, CgLayoutGrid } from "react-icons/cg";
 import { ImNewTab } from "react-icons/im";
 import { LuRefreshCcw } from "react-icons/lu";
+import { GoogleGenAI } from "@google/genai";
+
+
+
 
 const Home = () => {
   const options = [
@@ -17,8 +21,42 @@ const Home = () => {
     { value: "html-tailwind-bootstrap", label: "HTML + Tailwind + Bootstrap" },
   ];
 
-  const [outputScreen, setOutPutScreen] = useState(true);
+  const [outputScreen, setOutputScreen] = useState(true);
   const [tab, setTab] = useState(1);
+  const [prompt, setPrompt] = useState("");
+  const [frameWork, setFrameWork] = useState(options[0]);
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
+  // The client gets the API key from the environment variable `GEMINI_API_KEY`.
+  const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_GEMINI_API_KEY});
+
+  async function getResponse() {
+    setLoading(true);
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `
+        You are an experienced programmer with expertise in web development and UI/UX design. You create modern, animated, and fully responsive UI components. You are highly skilled in HTML, CSS, Tailwind CSS, Bootstrap, JavaScript, React, Next.js, Vue.js, Angular, and more.
+
+        Now, generate a UI component for: ${prompt}  
+        Framework to use: ${frameWork.value}  
+
+        Requirements:  
+        - The code must be clean, well-structured, and easy to understand.  
+        - Optimize for SEO where applicable.  
+        - Focus on creating a modern, animated, and responsive UI design.  
+        - Include high-quality hover effects, shadows, animations, colors, and typography.  
+        - Return ONLY the code, formatted properly in **Markdown fenced code blocks**.  
+        - Do NOT include explanations, text, comments, or anything else besides the code.  
+        - And give the whole code in a single HTML file.
+      `,
+    });
+    console.log(response.text);
+    setCode(response.text);
+    setOutputScreen(true);
+    setLoading(false);
+  }
 
   return (
     <>
@@ -63,12 +101,18 @@ const Home = () => {
               placeholder: (base) => ({ ...base, color: "#aaa" }),
               input: (base) => ({ ...base, color: "#fff" }),
             }}
+
+            onChange={(e)=>{
+              setFrameWork(e.value);
+            }}
           />
           <p className="text-[15px] font-[700] mt-5">Describe your component</p>
-          <textarea className="w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-[10px]" placeholder="Describe your component and let AI will code for your component"></textarea>
+          <textarea onChange={(e)=>{
+            setPrompt(e.target.value)
+          }} value={prompt} className="w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-[10px]" placeholder="Describe your component and let AI will code for your component"></textarea>
           <div className="flex items-center justify-between">
             <p className="text-[gray]">Click on generate button to generate your code</p>
-            <button className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]"> <i><BsStars /></i> Generate </button>
+            <button onClick={getResponse} className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]"> <i><BsStars /></i> Generate </button>
           </div>
           
         </div>

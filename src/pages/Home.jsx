@@ -77,6 +77,18 @@ const Home = () => {
     }
   }
 
+  const downloadFile = () =>{
+    const fileName = "GenUI-Code.html"
+    const blob = new Blob([code], {type: 'text/plain'})
+    let url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("File Downloaded");
+  }
+
   return (
     <>
       <Navbar />
@@ -171,7 +183,7 @@ const Home = () => {
                 <div className="right flex items-center gap-[10px]">
                   { tab === 1 ? <>
                     <button onClick={copyCode} className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><IoCopySharp /></button>
-                    <button className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><CgExport /></button>
+                    <button onClick={downloadFile} className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><CgExport /></button>
                   </> : <>
                     <button className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><ImNewTab /></button>
                     <button className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><LuRefreshCcw /></button>

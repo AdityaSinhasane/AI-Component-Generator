@@ -11,6 +11,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import { GoogleGenAI } from "@google/genai";
 import { ClipLoader } from "react-spinners"
 import { toast } from "react-toastify";
+import { MdOutlineClose } from "react-icons/md";
 
 
 
@@ -29,6 +30,7 @@ const Home = () => {
   const [frameWork, setFrameWork] = useState(options[0]);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isNewTabOpen, setIsNewTabOpen] = useState(false);
 
 
   function extractCode(response){
@@ -143,11 +145,17 @@ const Home = () => {
           }} value={prompt} className="w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-[10px]" placeholder="Describe your component and let AI will code for your component"></textarea>
           <div className="flex items-center justify-between">
             <p className="text-[gray]">Click on generate button to generate your code</p>
-            <button onClick={getResponse} className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]"> <i><BsStars /></i> 
+            <button onClick={getResponse} className="generate cursor-pointer flex items-center p-[15px] rounded-lg border-0 bg-gradient-to-r from-purple-400  to-purple-600 mt-3 px-[20px] gap-[10px] transition-all hover:opacity-[0.8]">
+                {
+                  loading === false ? <>
+                    <i><BsStars /></i> 
+                  </> : ""
+                }
+               
                 {
                   loading === true ? <>
                     <>
-                      <ClipLoader className="text-[30px]"/>
+                      <ClipLoader color="white" size={"20px"}/>
                     </>
                   </> : ""
                 }
@@ -185,7 +193,7 @@ const Home = () => {
                     <button onClick={copyCode} className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><IoCopySharp /></button>
                     <button onClick={downloadFile} className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><CgExport /></button>
                   </> : <>
-                    <button className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><ImNewTab /></button>
+                    <button onClick={()=>{setIsNewTabOpen(true)}} className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center  transition-all hover:bg-[#333]"><ImNewTab /></button>
                     <button className="export w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"><LuRefreshCcw /></button>
                   </>}
                  
@@ -197,9 +205,9 @@ const Home = () => {
                 tab === 1 ? <>
                   <Editor value={code} height="100%" theme="vs-dark" language="html"/>
                 </>: <>
-                  <div className="preview w-full h-full bg-white text-black flex items-center justify-center">
+                  <iframe srcDoc={code} className="preview w-full h-full bg-white text-black flex items-center justify-center">
 
-                  </div>
+                  </iframe>
                 </>
               }
               </div>
@@ -207,6 +215,25 @@ const Home = () => {
           }
         </div>
       </div>
+
+      {
+        isNewTabOpen === true ?
+        <>
+          <div className="container absolute left-0 top-0 right-0 bottom-0 bg-white w-screen min-h-screen overflow-auto">
+            <div className="top text-black w-full h-[60px] flex items-center justify-between px-[20px]">
+              <div className="left">
+                <pc className="font-bold">Preview</pc>
+              </div>
+              <div className="right flex items-center gap-[10px]">
+                <button onClick={setIsNewTabOpen(false)} className="copy w-[40px] h-[40px] rounded-xl border-[1px] border-zinc-800 flex items-center justify-center transition-all hover:bg-[#333]"> <MdOutlineClose/> </button>
+              </div>
+            </div>
+            
+            <iframe srcDoc={code} className="w-full h-full"></iframe>
+          </div>
+          
+        </> : ""
+      }
     </>
   );
 };
